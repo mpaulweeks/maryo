@@ -2,45 +2,79 @@ package main
 
 import (
     "fmt"
-    "io/ioutil"
-    "log"
+    "strings"
     "net/http"
     "golang.org/x/net/html"
 )
 
-func query(url string) (body string){
-    res, err := http.Get(url)
-    if err != nil {
-        log.Fatal(err)
-    }
-    body, err := ioutil.ReadAll(res.Body)
-    res.Body.Close()
-    if err != nil {
-        log.Fatal(err)
-    }
-    fmt.Printf("%s", body)
-    return body
-}
-
-func parse_notepad(n *html.Node) {
-    if n.Type == html.ElementNode && n.Data == "a" {
-        for _, a := range n.Attr {
-            if a.Key == "href" {
-                fmt.Println(a.Val)
-                break
-            }
+func getAttr(t html.Token, attr string) (ok bool, val string) {
+    for _, a := range t.Attr {
+        if a.Key == attr {
+            val = a.Val
+            ok = true
         }
     }
-    for c := n.FirstChild; c != nil; c = c.NextSibling {
-        parse_notepad(c)
+    return
+}
+
+func crawl(url string) (ok bool, out string) {
+    resp, err := http.Get(url)
+
+    if err != nil {
+        fmt.Println("ERROR: Failed to crawl \"" + url + "\"")
+        return 
+    }
+
+    b := resp.Body
+    defer b.Close() // close Body when the function returns
+
+    z := html.NewTokenizer(b)
+
+    found_it := false
+
+    for {
+        tt := z.Next()
+
+        switch tt {
+        case html.ErrorToken:
+            // End of the document, we're done
+            return
+        case html.StartTagToken:
+            t := z.Token()
+
+            if t.Data != "textarea" {
+                continue
+            }
+
+            ok, id := getAttr(t, "id")
+            if ok && id == "contents" {
+                found_it = true
+            }
+        case html.TextToken:
+            if found_it{
+                ok = true
+                out = string(z.Text())
+                return                
+            }
+        }
     }
 }
 
 func get_names() {
-    names_url := "http://notepad.cc/eti-mm-draft"
-    notepad_html := query(names_url)
-    doc, _ := html.Parse(notepad_html)
-    parse_notepad(doc)
+    names_url := "http://notepad.cc/eti-mm"
+    ok, notepad := crawl(names_url)
+    if !ok {
+        return
+    }
+    var names []string
+    for _, line := range strings.Split(notepad, "\n"){
+        trimmed := strings.Trim(line, " ")
+        if len(trimmed) == 0 || trimmed[0:1] == "#" {
+            continue
+        }
+        names = append(names, trimmed)
+    }
+    fmt.Println(names)
 }
 
 func main() {
