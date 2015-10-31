@@ -8,12 +8,23 @@ import (
 )
 
 type MiiversePost struct {
-    Username string
+    MiiverseName string
     Description string
     Code string
 }
 
-func crawl_miiverse(url string, chFinished chan bool, out chan MiiversePost) {
+func parsePost(miiverseName string, text string) MiiversePost {
+    split := strings.Split(text, "(")
+    return MiiversePost{
+        MiiverseName: miiverseName,
+        Description: strings.Trim(split[0], " "),
+        Code: strings.Trim(split[1], ")"),
+    }
+}
+
+func crawl_miiverse(miiverseName string, chFinished chan bool, chPosts chan []MiiversePost) {
+    url := "https://miiverse.nintendo.net/users/" + miiverseName + "/posts"
+
     resp, err := http.Get(url)
 
     var posts []MiiversePost
@@ -41,47 +52,46 @@ func crawl_miiverse(url string, chFinished chan bool, out chan MiiversePost) {
         switch tt {
         case html.ErrorToken:
             // End of the document, we're done
+            chPosts <- posts
             return
         case html.StartTagToken:
             t := z.Token()
 
-            if t.Data != "textarea" {
+            if t.Data != "p" {
                 continue
             }
 
-            ok, id := getAttr(t, "id")
-            if ok && id == "contents" {
+            ok, id := getAttr(t, "class")
+            if ok && id == "post-content-text" {
                 found_it = true
             }
         case html.TextToken:
             if found_it{
-                post := string(z.Text())
-                posts = append(posts, post)
+                new_post := parsePost(miiverseName, string(z.Text()))
+                posts = append(posts, new_post)
+                found_it = false
             }
         }
     }
-
-    out <- posts
-    return
 }
 
 func get_miiverse(names []string) []MiiversePost {
     var allPosts []MiiversePost
 
     // Channels
-    chPosts := make(chan MiiversePost)
+    chPosts := make(chan []MiiversePost)
     chFinished := make(chan bool) 
 
     // Kick off the crawl process (concurrently)
-    for _, url := range names {
-        go crawl_miiverse(url, chPosts, chFinished)
+    for _, miiverseName := range names {
+        go crawl_miiverse(miiverseName, chFinished, chPosts)
     }
 
     // Subscribe to both channels
     for c := 0; c < len(names); {
         select {
         case posts := <-chPosts:
-            allPosts = append(allPosts, posts)
+            allPosts = append(allPosts, posts...)
         case <-chFinished:
             c++
         }
