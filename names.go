@@ -76,3 +76,8 @@ func get_names() []string {
     }
     return names
 }
+
+func main() {
+    names := get_names()
+    fmt.Println(names)
+}
