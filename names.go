@@ -62,11 +62,11 @@ func crawl(url string) (ok bool, out string) {
 
 func get_names() []string {
     names_url := "http://notepad.cc/eti-mm"
+    var names []string
     ok, notepad := crawl(names_url)
     if !ok {
-        return []
+        return names
     }
-    var names []string
     for _, line := range strings.Split(notepad, "\n"){
         trimmed := strings.Trim(line, " ")
         if len(trimmed) == 0 || trimmed[0:1] == "#" {
