@@ -31,3 +31,6 @@ _testmain.go
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# maryo specific
+cred.json
