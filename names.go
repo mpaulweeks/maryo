@@ -7,17 +7,7 @@ import (
     "golang.org/x/net/html"
 )
 
-func getAttr(t html.Token, attr string) (ok bool, val string) {
-    for _, a := range t.Attr {
-        if a.Key == attr {
-            val = a.Val
-            ok = true
-        }
-    }
-    return
-}
-
-func crawl(url string) (ok bool, out string) {
+func crawl_notepad(url string) (ok bool, out string) {
     resp, err := http.Get(url)
 
     if err != nil {
@@ -63,7 +53,7 @@ func crawl(url string) (ok bool, out string) {
 func get_names() []string {
     names_url := "http://notepad.cc/eti-mm"
     var names []string
-    ok, notepad := crawl(names_url)
+    ok, notepad := crawl_notepad(names_url)
     if !ok {
         return names
     }
@@ -75,9 +65,4 @@ func get_names() []string {
         names = append(names, trimmed)
     }
     return names
-}
-
-func main() {
-    names := get_names()
-    fmt.Println(names)
 }

@@ -8,5 +8,5 @@ func main() {
     names := get_names()
     fmt.Println(names)
 
-    postToForum()
+    // postToForum()
 }

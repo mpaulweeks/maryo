@@ -71,7 +71,3 @@ func postToForum() {
     }
     log.Println(string(data))   // print whole html of user profile data 
 }
-
-func main() {
-    postToForum()
-}
