@@ -5,8 +5,8 @@ import (
     "reflect"
 )
 
-func testMiiverse(t *testing.T) {
-    names := []string{"MrLuckyWaffles"}
+func TestMiiverse(t *testing.T) {
+    names := []string{"MrLuckyWaffles", "WhiteBabylon"}
     result := get_miiverse(names)
     found := false
     expected := MiiversePost{
