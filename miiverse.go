@@ -82,7 +82,7 @@ func crawl_miiverse(miiverseName string, chFinished chan bool, chPosts chan []Mi
     }
 }
 
-func get_miiverse(names []string) []MiiversePost {
+func getMiiversePosts(names []string) []MiiversePost {
     var allPosts []MiiversePost
 
     // Channels

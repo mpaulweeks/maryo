@@ -50,7 +50,7 @@ func crawl_notepad(url string) (ok bool, out string) {
     }
 }
 
-func get_names() []string {
+func getMiiverseNames() []string {
     names_url := "http://notepad.cc/eti-mm"
     var names []string
     ok, notepad := crawl_notepad(names_url)

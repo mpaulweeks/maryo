@@ -5,7 +5,7 @@ import (
 )
 
 func TestNames(t *testing.T) {
-    names := get_names()
+    names := getMiiverseNames()
     expected := "MrLuckyWaffles"
     if !contains(names, expected){
         t.Errorf("Expected %q, got %q", expected, names)

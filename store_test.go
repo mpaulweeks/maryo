@@ -27,9 +27,8 @@ func TestFileCache(t *testing.T) {
     expected := map[string]MiiversePost{
         waff1.Code: waff1,
     }
-    save_cache(cacheFileTest, expected)
-
-    result := load_cache(cacheFileTest)
+    saveCache(cacheFileTest, expected)
+    result := loadCache(cacheFileTest)
     if !reflect.DeepEqual(expected, result){
         t.Errorf("Saved != Loaded. Saved: %q, Loaded: %q", expected, result)
     }
@@ -41,7 +40,7 @@ func TestFilter(t *testing.T) {
     }
     fetched := []MiiversePost{waff1, waff2, babylon1}
     expected := []MiiversePost{waff2}
-    result := filter_updates(cache, fetched)
+    result := filterNewPosts(cache, fetched)
     if !reflect.DeepEqual(expected, result){
         t.Errorf("Expected: %q, Result: %q", expected, result)
     }
@@ -57,7 +56,7 @@ func TestUpdate(t *testing.T) {
         waff2.Code: waff2,
         babylon1.Code: babylon1,
     }
-    update_cache(cache, fetched)
+    updateCache(cache, fetched)
     if !reflect.DeepEqual(expected, cache){
         t.Errorf("Expected: %q, Result: %q", expected, cache)
     }

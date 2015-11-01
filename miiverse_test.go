@@ -7,7 +7,7 @@ import (
 
 func TestMiiverse(t *testing.T) {
     names := []string{"MrLuckyWaffles", "WhiteBabylon"}
-    result := get_miiverse(names)
+    result := getMiiversePosts(names)
     found := false
     expected := MiiversePost{
         MiiverseName: "MrLuckyWaffles",

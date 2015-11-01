@@ -3,17 +3,17 @@ package main
 import (
 )
 
-func load_cache(filePath string) map[string]MiiversePost {
+func loadCache(filePath string) map[string]MiiversePost {
     var postCache map[string]MiiversePost
     readJSONFile(filePath, &postCache)
     return postCache
 }
 
-func save_cache(filePath string, toSave map[string]MiiversePost){
+func saveCache(filePath string, toSave map[string]MiiversePost){
     writeJSONFile(filePath, toSave)
 }
 
-func filter_updates(cache map[string]MiiversePost, fetched []MiiversePost) []MiiversePost {
+func filterNewPosts(cache map[string]MiiversePost, fetched []MiiversePost) []MiiversePost {
     var cachedNames = make(map[string]bool)
     for _, savedPost := range cache {
         cachedNames[savedPost.MiiverseName] = true
@@ -30,7 +30,7 @@ func filter_updates(cache map[string]MiiversePost, fetched []MiiversePost) []Mii
     return out
 }
 
-func update_cache(cache map[string]MiiversePost, fetched []MiiversePost) {
+func updateCache(cache map[string]MiiversePost, fetched []MiiversePost) {
     for _, newPost := range fetched {
         _, codeIsPresent := cache[newPost.Code]
         if !codeIsPresent {

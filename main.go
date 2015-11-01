@@ -6,9 +6,15 @@ import (
 
 func main() {
     fmt.Println("main")
-    names := get_names()
-    miiversePosts := get_miiverse(names)
-    fmt.Println(miiversePosts)
+    names := getMiiverseNames()
+    fetched := getMiiversePosts(names)
+
+    cache := loadCache(cacheFile)
+    newPosts := filterNewPosts(cache, fetched)
 
     // postToForum()
+    fmt.Println(newPosts)
+
+    updateCache(cache, fetched)
+    saveCache(cacheFile, cache)
 }
