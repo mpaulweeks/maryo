@@ -46,10 +46,35 @@ func TestFilter(t *testing.T) {
     }
 }
 
+func TestFilterEmpty(t *testing.T) {
+    cache := map[string]MiiversePost{
+        waff1.Code: waff1,
+    }
+    fetched := []MiiversePost{waff1, babylon1}
+    result := filterNewPosts(cache, fetched)
+    if len(result) > 0 {
+        t.Errorf("Expected: [], Result: %q", result)
+    }
+}
+
 func TestUpdate(t *testing.T) {
     cache := map[string]MiiversePost{
         waff1.Code: waff1,
     }
+    fetched := []MiiversePost{waff1, waff2, babylon1}
+    expected := map[string]MiiversePost{
+        waff1.Code: waff1,
+        waff2.Code: waff2,
+        babylon1.Code: babylon1,
+    }
+    updateCache(cache, fetched)
+    if !reflect.DeepEqual(expected, cache){
+        t.Errorf("Expected: %q, Result: %q", expected, cache)
+    }
+}
+
+func TestUpdateEmpty(t *testing.T) {
+    cache := map[string]MiiversePost{}
     fetched := []MiiversePost{waff1, waff2, babylon1}
     expected := map[string]MiiversePost{
         waff1.Code: waff1,

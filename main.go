@@ -5,7 +5,6 @@ import (
 )
 
 func main() {
-    fmt.Println("main")
     names := getMiiverseNames()
     fetched := getMiiversePosts(names)
 
@@ -14,7 +13,6 @@ func main() {
 
     if len(newPosts) > 0 {
         forumMessage := formatPosts(newPosts)
-        fmt.Println("New message: %q:", forumMessage)
         postToForum(forumMessage)
     }
     fmt.Println("New posts: %q:", newPosts)
