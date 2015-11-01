@@ -15,7 +15,7 @@ func main() {
         forumMessage := formatPosts(newPosts)
         postToForum(forumMessage)
     }
-    fmt.Println("New posts: %q:", newPosts)
+    fmt.Println("New posts:", newPosts)
 
     updateCache(cache, fetched)
     saveCache(cacheFile, cache)
