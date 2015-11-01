@@ -12,8 +12,12 @@ func main() {
     cache := loadCache(cacheFile)
     newPosts := filterNewPosts(cache, fetched)
 
-    // postToForum()
-    fmt.Println(newPosts)
+    if len(newPosts) > 0 {
+        forumMessage := formatPosts(newPosts)
+        fmt.Println("New message: %q:", forumMessage)
+        postToForum(forumMessage)
+    }
+    fmt.Println("New posts: %q:", newPosts)
 
     updateCache(cache, fetched)
     saveCache(cacheFile, cache)

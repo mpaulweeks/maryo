@@ -1,6 +1,7 @@
 package main
 
 import (
+    "fmt"
     "code.google.com/p/go.net/publicsuffix"
     "io/ioutil"
     "log"
@@ -9,7 +10,18 @@ import (
     "net/url"
 )
 
-func postToForum() {
+const messageSig string = "\n---\nAdd your MiiverseName here: " + namesUrl
+
+func formatPosts(newPosts []MiiversePost) string {
+    html := "<b>NEW LEVELS</b>"
+    for _, post := range newPosts{
+        html = fmt.Sprintf("%s\n\n%s\n%s\n%s", html, post.MiiverseName, post.Description, post.Code)
+    }
+    html = html + messageSig
+    return html
+}
+
+func postToForum(forumMessage string) {
     var cred map[string]string
     readJSONFile(credFile, &cred)
 
@@ -32,7 +44,7 @@ func postToForum() {
     resp, err = client.PostForm(cred["post_url"], url.Values{
         "topic": {cred["thread_id"]},
         "h": {"2b996"},
-        "message": {"auto\n---\nauto sig"},
+        "message": {forumMessage},
         "-ajaxCounter": {"1"},
     })
     if err != nil {

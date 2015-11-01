@@ -1,7 +1,7 @@
 package main
 
 import (
-    "fmt"
+    "log"
     "strings"
     "net/http"
     "golang.org/x/net/html"
@@ -11,7 +11,7 @@ func crawl_notepad(url string) (ok bool, out string) {
     resp, err := http.Get(url)
 
     if err != nil {
-        fmt.Println("ERROR: Failed to crawl \"" + url + "\"")
+        log.Fatal("ERROR: Failed to crawl \"" + url + "\"")
         return 
     }
 
@@ -51,9 +51,8 @@ func crawl_notepad(url string) (ok bool, out string) {
 }
 
 func getMiiverseNames() []string {
-    names_url := "http://notepad.cc/eti-mm"
     var names []string
-    ok, notepad := crawl_notepad(names_url)
+    ok, notepad := crawl_notepad(namesUrl)
     if !ok {
         return names
     }
