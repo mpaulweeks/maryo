@@ -2,6 +2,8 @@ package main
 
 import (
     "golang.org/x/net/html"
+    "io/ioutil"
+    "encoding/json"
 )
 
 func getAttr(t html.Token, attr string) (ok bool, val string) {
@@ -22,4 +24,18 @@ func contains(slice []string, item string) bool {
 
     _, ok := set[item]
     return ok
+}
+
+func readJSONFile(path string, contentsHolder interface{}) {
+    fileContents, err := ioutil.ReadFile(path)
+    if err != nil {panic(err)}
+    err = json.Unmarshal(fileContents, contentsHolder)
+    if err != nil {panic(err)}
+}
+
+func writeJSONFile(path string, contentsHolder interface{}) {
+    fileContents, err := json.Marshal(contentsHolder)
+    if err != nil {panic(err)}
+    err = ioutil.WriteFile(path, fileContents, 0644)
+    if err != nil {panic(err)}
 }

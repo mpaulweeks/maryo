@@ -3,7 +3,6 @@ package main
 import (
     "code.google.com/p/go.net/publicsuffix"
     "io/ioutil"
-    "encoding/json"
     "log"
     "net/http"
     "net/http/cookiejar"
@@ -11,23 +10,6 @@ import (
 )
 
 const credFile string = "cred.json"
-
-
-func readFile(path string) []byte {
-    fileContents, err := ioutil.ReadFile(path)
-    if err == nil {
-        return fileContents
-    }
-    panic(err)
-}
-
-func readJSONFile(path string, contentsHolder interface{}) {
-    var fileContents = readFile(path)
-    err := json.Unmarshal(fileContents, contentsHolder)
-    if err != nil {
-        panic(err)
-    }
-}
 
 func postToForum() {
     var cred map[string]string
@@ -48,11 +30,6 @@ func postToForum() {
     if err != nil {
         log.Fatal(err)
     }
-
-    // resp, err = client.Get(cred["profile"])
-    // if err != nil {
-    //     log.Fatal(err)
-    // }
 
     resp, err = client.PostForm(cred["post_url"], url.Values{
         "topic": {cred["thread_id"]},

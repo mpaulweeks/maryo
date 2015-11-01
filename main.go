@@ -5,8 +5,9 @@ import (
 )
 
 func main() {
-    names := get_names()
-    fmt.Println(names)
+    fmt.Println("main")
+    // names := get_names()
+    // miiversePosts := get_miiverse(names)
 
     // postToForum()
 }

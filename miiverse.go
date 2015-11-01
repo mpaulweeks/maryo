@@ -7,12 +7,6 @@ import (
     "golang.org/x/net/html"
 )
 
-type MiiversePost struct {
-    MiiverseName string
-    Description string
-    Code string
-}
-
 func parsePost(miiverseName string, text string) MiiversePost {
     split := strings.Split(text, "(")
     return MiiversePost{
