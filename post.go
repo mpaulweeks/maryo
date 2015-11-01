@@ -8,6 +8,7 @@ import (
     "net/http"
     "net/http/cookiejar"
     "net/url"
+    "golang.org/x/net/html"
 )
 
 const messageSig string = "\n---\nAdd your MiiverseName here: " + namesUrl
@@ -21,10 +22,58 @@ func formatPosts(newPosts []MiiversePost) string {
     return html
 }
 
-func postToForum(forumMessage string) {
-    var cred map[string]string
-    readJSONFile(credFile, &cred)
+func crawlForumTopic(client http.Client, url string) (success bool, out string) {
+    resp, err := client.Get(url)
 
+    if err != nil {
+        log.Fatal("ERROR: Failed to crawl \"" + url + "\"")
+        return
+    }
+
+    b := resp.Body
+    defer b.Close() // close Body when the function returns
+
+    z := html.NewTokenizer(b)
+    for {
+        tt := z.Next()
+
+        switch tt {
+        case html.ErrorToken:
+            // End of the document, we're done
+            return
+        case html.SelfClosingTagToken:
+            t := z.Token()
+            if t.Data == "input" {
+                ok, name := getAttr(t, "name")
+                if ok && name == "h" {
+                    ok, key := getAttr(t, "value")
+                    if ok {
+                        success = true
+                        out = key
+                        return
+                    }
+                }
+            }
+        }
+    }
+}
+
+func getForumKey(cred map[string]string, client http.Client) string {
+    get_url := cred["get_url"] + cred["thread_id"]
+    ok, key := crawlForumTopic(client, get_url)
+    if !ok {
+        log.Fatal("ERROR: Failed to find forum key. Url:", get_url)
+    }
+    return key
+}
+
+func loadForumCredentials(filePath string) map[string]string {
+    var cred map[string]string
+    readJSONFile(filePath, &cred)
+    return cred
+}
+
+func loginToForum(cred map[string]string) http.Client {
     options := cookiejar.Options{
         PublicSuffixList: publicsuffix.List,
     }
@@ -33,17 +82,20 @@ func postToForum(forumMessage string) {
         log.Fatal(err)
     }
     client := http.Client{Jar: jar}
-    resp, err := client.PostForm(cred["login"], url.Values{
+    _, err = client.PostForm(cred["login"], url.Values{
         "b": {cred["username"]},
         "p" : {cred["password"]},        
     })
     if err != nil {
         log.Fatal(err)
     }
+    return client
+}
 
-    resp, err = client.PostForm(cred["post_url"], url.Values{
+func postToForum(cred map[string]string, client http.Client, forumKey string, forumMessage string) {
+    resp, err := client.PostForm(cred["post_url"], url.Values{
         "topic": {cred["thread_id"]},
-        "h": {"2b996"},
+        "h": {forumKey},
         "message": {forumMessage},
         "-ajaxCounter": {"1"},
     })

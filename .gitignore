@@ -35,4 +35,5 @@ Thumbs.db
 # maryo specific
 maryo
 cred.json
+cred_test.json
 cache.json

@@ -13,3 +13,12 @@ func TestPostFormatting(t *testing.T) {
         t.Errorf("Expected: %q, Result: %q", expected, result)
     }
 }
+
+func TestGetForumKey(t *testing.T) {
+    cred := loadForumCredentials(credFileTest)
+    client := loginToForum(cred)
+    result := getForumKey(cred, client)
+    if len(result) != 5 {
+        t.Errorf("Bad forum key: %q", result)
+    }
+}

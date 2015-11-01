@@ -44,7 +44,7 @@ func crawl_notepad(url string) (ok bool, out string) {
             if found_it{
                 ok = true
                 out = string(z.Text())
-                return                
+                return
             }
         }
     }
