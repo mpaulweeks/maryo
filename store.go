@@ -14,7 +14,7 @@ func save_cache(filePath string, toSave map[string]MiiversePost){
 }
 
 func filter_updates(cache map[string]MiiversePost, fetched []MiiversePost) []MiiversePost {
-    var cachedNames map[string]bool
+    var cachedNames = make(map[string]bool)
     for _, savedPost := range cache {
         cachedNames[savedPost.MiiverseName] = true
     }
