@@ -39,6 +39,7 @@ func crawl_miiverse(miiverseName string, chFinished chan bool, chPosts chan []Mi
     z := html.NewTokenizer(b)
 
     found_it := false
+    is_mario := false
 
     for {
         tt := z.Next()
@@ -51,16 +52,20 @@ func crawl_miiverse(miiverseName string, chFinished chan bool, chPosts chan []Mi
         case html.StartTagToken:
             t := z.Token()
 
-            if t.Data != "p" {
-                continue
+            if t.Data == "p" {
+                ok, class := getAttr(t, "class")
+                if ok && class == "post-content-text" {
+                    found_it = true
+                }
+                if ok && class == "community-container" {
+                    inner_text := string(z.Text())
+                    check_text := "Super Mario Maker Community"
+                    is_mario = strings.Contains(inner_text, check_text)
+                }
             }
 
-            ok, id := getAttr(t, "class")
-            if ok && id == "post-content-text" {
-                found_it = true
-            }
         case html.TextToken:
-            if found_it{
+            if found_it && is_mario {
                 new_post := parsePost(miiverseName, string(z.Text()))
                 posts = append(posts, new_post)
                 found_it = false
