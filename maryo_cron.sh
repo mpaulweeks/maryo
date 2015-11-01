@@ -2,5 +2,5 @@
 while [ true ]
 do
     ./maryo
-    sleep 30
+    sleep 60
 done
