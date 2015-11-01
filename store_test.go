@@ -2,20 +2,20 @@ package main
 
 import (
     "testing"
+    "reflect"
 )
 
 func TestStore(t *testing.T) {
-    // result := load_cache()
-    // if true{
-    //     t.Errorf("%q", result)
-    // }
-
-
-    expected := MiiversePost{
+    example := MiiversePost{
         MiiverseName: "MrLuckyWaffles",
         Description: "Don't Throw the POW!",
         Code: "BBD1-0000-00C7-030C",
     }
-    toSave := []MiiversePost{expected}
-    save_cache(toSave)
+    expected := []MiiversePost{example}
+    save_cache(cacheFileTest, expected)
+
+    result := load_cache(cacheFileTest)
+    if !reflect.DeepEqual(expected, result){
+        t.Errorf("Saved != Loaded. Saved: %q, Loaded: %q", expected, result)
+    }
 }

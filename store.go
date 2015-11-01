@@ -1,20 +1,16 @@
 package main
 
 import (
-    "fmt"
 )
 
-const cacheFile string = "cache.json"
-
-func load_cache() []MiiversePost {
+func load_cache(filePath string) []MiiversePost {
     var postCache []MiiversePost
-    readJSONFile(cacheFile, &postCache)
-    fmt.Println(postCache)
+    readJSONFile(filePath, &postCache)
     return postCache
 }
 
-func save_cache(toSave []MiiversePost){
-    writeJSONFile(cacheFile, toSave)
+func save_cache(filePath string, toSave []MiiversePost){
+    writeJSONFile(filePath, toSave)
 }
 
 func filter_updates(raw []MiiversePost) []MiiversePost {

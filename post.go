@@ -9,8 +9,6 @@ import (
     "net/url"
 )
 
-const credFile string = "cred.json"
-
 func postToForum() {
     var cred map[string]string
     readJSONFile(credFile, &cred)
