@@ -56,5 +56,5 @@ func postToForum(forumMessage string) {
     if err != nil {
         log.Fatal(err)
     }
-    log.Println(string(data))   // print whole html of user profile data 
+    log.Println(string(data))   // print resp
 }
