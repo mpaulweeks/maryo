@@ -12,13 +12,13 @@ func main() {
     newPosts := filterNewPosts(cache, fetched)
 
     if len(newPosts) > 0 {
+        fmt.Println("New posts:", newPosts)
         forumMessage := formatPosts(newPosts)
         cred := loadForumCredentials(credFile)
         client := loginToForum(cred)
         forumKey := getForumKey(cred, client)
         postToForum(cred, client, forumKey, forumMessage)
     }
-    fmt.Println("New posts:", newPosts)
 
     updateCache(cache, fetched)
     saveCache(cacheFile, cache)
