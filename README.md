@@ -1,5 +1,7 @@
 # maryo
 
+![](http://supermariomaker.nintendo.com/manual/img/img_mashiko_robot.gif)
+
 A script that crawls the Miiverse for Mario Maker levels and then posts them to a forum.
 
 Files not included that are necessary for building:
