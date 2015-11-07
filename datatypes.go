@@ -8,6 +8,7 @@ type MiiversePost struct {
 }
 
 type Credentials struct {
+    RegisterUrl string
     GoogleAppUrl string
     Login string
     PostUrl string

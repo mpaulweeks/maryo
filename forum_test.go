@@ -10,11 +10,12 @@ var sampleUserData = UserData{
 }
 
 func TestPostFormatting(t *testing.T) {
+    cred := loadCredentials(credFileTest)
     userData := sampleUserData
     posts := []MiiversePost{waff1}
 
-    expected := "<b>NEW LEVELS</b>\n\nMr Lucky Waffles\nDon't Throw the POW!\nBBD1-0000-00C7-030C\n---\nAdd your MiiverseName here: http://notepad.cc/eti-mm"
-    result := formatPosts(userData, posts)
+    expected := "<b>NEW LEVELS</b>\n\nMr Lucky Waffles\nDon't Throw the POW!\nBBD1-0000-00C7-030C\n---\nRegister your MiiverseName here: " + cred.RegisterUrl
+    result := formatPosts(cred, userData, posts)
     if expected != result {
         t.Errorf("Expected: %q, Result: %q", expected, result)
     }
