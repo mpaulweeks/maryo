@@ -39,3 +39,9 @@ func writeJSONFile(path string, contentsHolder interface{}) {
     err = ioutil.WriteFile(path, fileContents, 0644)
     if err != nil {panic(err)}
 }
+
+func loadCredentials(filePath string) Credentials {
+    var cred Credentials
+    readJSONFile(filePath, &cred)
+    return cred
+}

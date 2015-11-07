@@ -15,7 +15,7 @@ func TestPostFormatting(t *testing.T) {
 }
 
 func TestGetForumKey(t *testing.T) {
-    cred := loadForumCredentials(credFileTest)
+    cred := loadCredentials(credFileTest)
     client := loginToForum(cred)
     result := getForumKey(cred, client)
     if len(result) != 5 {

@@ -58,8 +58,8 @@ func crawlForumTopic(client http.Client, url string) (success bool, out string) 
     }
 }
 
-func getForumKey(cred map[string]string, client http.Client) string {
-    get_url := cred["get_url"] + cred["thread_id"]
+func getForumKey(cred Credentials, client http.Client) string {
+    get_url := cred.GetUrl + cred.ThreadId
     ok, key := crawlForumTopic(client, get_url)
     if !ok {
         log.Fatal("ERROR: Failed to find forum key. Url:", get_url)
@@ -67,13 +67,7 @@ func getForumKey(cred map[string]string, client http.Client) string {
     return key
 }
 
-func loadForumCredentials(filePath string) map[string]string {
-    var cred map[string]string
-    readJSONFile(filePath, &cred)
-    return cred
-}
-
-func loginToForum(cred map[string]string) http.Client {
+func loginToForum(cred Credentials) http.Client {
     options := cookiejar.Options{
         PublicSuffixList: publicsuffix.List,
     }
@@ -82,9 +76,9 @@ func loginToForum(cred map[string]string) http.Client {
         log.Fatal(err)
     }
     client := http.Client{Jar: jar}
-    _, err = client.PostForm(cred["login"], url.Values{
-        "b": {cred["username"]},
-        "p" : {cred["password"]},        
+    _, err = client.PostForm(cred.Login, url.Values{
+        "b": {cred.Username},
+        "p" : {cred.Password},
     })
     if err != nil {
         log.Fatal(err)
@@ -92,9 +86,9 @@ func loginToForum(cred map[string]string) http.Client {
     return client
 }
 
-func postToForum(cred map[string]string, client http.Client, forumKey string, forumMessage string) {
-    resp, err := client.PostForm(cred["post_url"], url.Values{
-        "topic": {cred["thread_id"]},
+func postToForum(cred Credentials, client http.Client, forumKey string, forumMessage string) {
+    resp, err := client.PostForm(cred.PostUrl, url.Values{
+        "topic": {cred.ThreadId},
         "h": {forumKey},
         "message": {forumMessage},
         "-ajaxCounter": {"1"},

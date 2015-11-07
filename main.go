@@ -14,7 +14,7 @@ func main() {
     if len(newPosts) > 0 {
         fmt.Println("New posts:", newPosts)
         forumMessage := formatPosts(newPosts)
-        cred := loadForumCredentials(credFile)
+        cred := loadCredentials(credFile)
         client := loginToForum(cred)
         forumKey := getForumKey(cred, client)
         postToForum(cred, client, forumKey, forumMessage)
