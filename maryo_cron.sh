@@ -1,4 +1,5 @@
 #!/bin/sh
+echo "{}" > cache.json
 while [ true ]
 do
     ./maryo
