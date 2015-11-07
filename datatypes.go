@@ -17,7 +17,7 @@ type Credentials struct {
     Password string
 }
 
-type GoogleAppResult struct {
+type UserData struct {
     MiiverseNames []string
     NickNames map[string]string
 }

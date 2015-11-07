@@ -5,16 +5,17 @@ import (
 )
 
 func main() {
-    names := getMiiverseNames()
-    fetched := getMiiversePosts(names)
+    cred := loadCredentials(credFile)
+
+    _, userData := getUserData(cred)
+    fetched := getMiiversePosts(userData.MiiverseNames)
 
     cache := loadCache(cacheFile)
     newPosts := filterNewPosts(cache, fetched)
 
     if len(newPosts) > 0 {
         fmt.Println("New posts:", newPosts)
-        forumMessage := formatPosts(newPosts)
-        cred := loadCredentials(credFile)
+        forumMessage := formatPosts(userData, newPosts)
         client := loginToForum(cred)
         forumKey := getForumKey(cred, client)
         postToForum(cred, client, forumKey, forumMessage)

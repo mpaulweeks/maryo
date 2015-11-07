@@ -7,7 +7,7 @@ import (
     "encoding/json"
 )
 
-func crawl_googLe_app(url string) (ok bool, out GoogleAppResult) {
+func crawl_googLe_app(url string) (ok bool, out UserData) {
     resp, err := http.Get(url)
     if err != nil {
         log.Fatal("ERROR: Failed to crawl \"" + url + "\"")
@@ -28,6 +28,6 @@ func crawl_googLe_app(url string) (ok bool, out GoogleAppResult) {
     return
 }
 
-func getUserData(cred Credentials) (ok bool, out GoogleAppResult) {
+func getUserData(cred Credentials) (ok bool, out UserData) {
     return crawl_googLe_app(cred.GoogleAppUrl)
 }

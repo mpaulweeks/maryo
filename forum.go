@@ -13,10 +13,19 @@ import (
 
 const messageSig string = "\n---\nAdd your MiiverseName here: " + namesUrl
 
-func formatPosts(newPosts []MiiversePost) string {
+func formatPost(userData UserData, post MiiversePost) string {
+    displayName := post.MiiverseName + " aka " + post.NickName
+    forumName, ok := userData.NickNames[post.NickName]
+    if ok {
+        displayName = forumName
+    }
+    return fmt.Sprintf("%s\n%s\n%s", displayName, post.Description, post.Code)
+}
+
+func formatPosts(userData UserData, newPosts []MiiversePost) string {
     html := "<b>NEW LEVELS</b>"
     for _, post := range newPosts{
-        html = fmt.Sprintf("%s\n\n%s\n%s\n%s", html, post.MiiverseName, post.Description, post.Code)
+        html = fmt.Sprintf("%s\n\n%s", html, formatPost(userData, post))
     }
     html = html + messageSig
     return html
