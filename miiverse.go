@@ -7,10 +7,11 @@ import (
     "golang.org/x/net/html"
 )
 
-func parsePost(miiverseName string, text string) MiiversePost {
+func parsePost(miiverseName string, nickname string, text string) MiiversePost {
     split := strings.Split(text, "(")
     return MiiversePost{
         MiiverseName: miiverseName,
+        NickName: nickname,
         Description: strings.Trim(split[0], " "),
         Code: strings.Trim(split[1], ")"),
     }
@@ -41,6 +42,8 @@ func crawl_miiverse(miiverseName string, chFinished chan bool, chPosts chan []Mi
     found_it := false
     is_mario := false
     is_container := false
+    is_nickname := false
+    nickname := ""
 
     for {
         tt := z.Next()
@@ -63,6 +66,9 @@ func crawl_miiverse(miiverseName string, chFinished chan bool, chPosts chan []Mi
                 if ok && class == "test-community-link" {
                     is_container = true
                 }
+                if ok && class == "nick-name" {
+                    is_nickname = true
+                }
             }
         case html.TextToken:
             if is_container {
@@ -74,9 +80,13 @@ func crawl_miiverse(miiverseName string, chFinished chan bool, chPosts chan []Mi
             if found_it {
                 found_it = false
                 if is_mario {
-                    new_post := parsePost(miiverseName, string(z.Text()))
+                    new_post := parsePost(miiverseName, nickname, string(z.Text()))
                     posts = append(posts, new_post)
                 }
+            }
+            if is_nickname && len(nickname) == 0 {
+                nickname = string(z.Text())
+                is_nickname = false
             }
         }
     }

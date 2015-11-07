@@ -7,18 +7,21 @@ import (
 
 var waff1 = MiiversePost{
     MiiverseName: "MrLuckyWaffles",
+    NickName: "Waff",
     Description: "Don't Throw the POW!",
     Code: "BBD1-0000-00C7-030C",
 }
 
 var waff2 = MiiversePost{
     MiiverseName: "MrLuckyWaffles",
+    NickName: "Waff",
     Description: "Amiibo Castle",
     Code: "91BB-0000-00CE-4B77",
 }
 
 var babylon1 = MiiversePost{
     MiiverseName: "WhiteBabylon",
+    NickName: "Babylon",
     Description: "red shell god",
     Code: "74DE-0000-0015-0F80",
 }

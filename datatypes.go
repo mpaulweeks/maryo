@@ -2,6 +2,7 @@ package main
 
 type MiiversePost struct {
     MiiverseName string
+    NickName string
     Description string
     Code string
 }

@@ -11,6 +11,7 @@ func TestMiiverse(t *testing.T) {
     found := false
     expected := MiiversePost{
         MiiverseName: "MrLuckyWaffles",
+        NickName: "Waff",
         Description: "Don't Throw the POW!",
         Code: "BBD1-0000-00C7-030C",
     }
