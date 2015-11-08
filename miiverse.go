@@ -1,6 +1,9 @@
 package main
 
 import (
+    "io"
+    "net/url"
+    "os"
     "fmt"
     "strings"
     "net/http"
@@ -137,4 +140,50 @@ func getMiiversePosts(names []string) []MiiversePost {
     }
 
     return allPosts
+}
+
+func downloadImage(rawUrl string) string {
+    fmt.Println("Downloading file...")
+
+    fileURL, err := url.Parse(rawUrl)
+    if err != nil {
+         panic(err)
+    }
+
+    path := fileURL.Path
+    segments := strings.Split(path, "/")
+    fileName := segments[2]
+    fileName = fmt.Sprintf("img/%s.jpeg", fileName)
+
+    file, err := os.Create(fileName)
+    if err != nil {
+         fmt.Println(err)
+         panic(err)
+    }
+    defer file.Close()
+
+    check := http.Client{
+         CheckRedirect: func(r *http.Request, via []*http.Request) error {
+                 r.URL.Opaque = r.URL.Path
+                 return nil
+         },
+    }
+
+    resp, err := check.Get(rawUrl) // add a filter to check redirect
+    if err != nil {
+         fmt.Println(err)
+         panic(err)
+    }
+    defer resp.Body.Close()
+
+    fmt.Println(resp.Status)
+
+    size, err := io.Copy(file, resp.Body)
+    if err != nil {
+         panic(err)
+    }
+
+    fmt.Printf("%s with %v bytes downloaded", fileName, size)
+
+    return fileName
 }

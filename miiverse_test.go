@@ -17,3 +17,11 @@ func TestMiiverse(t *testing.T) {
         t.Errorf("Expected :%q, got: %q", expected, result)
     }
 }
+
+func TestDownloadImage(t *testing.T) {
+    rawUrl := "https://d3esbfg30x759i.cloudfront.net/ss/WVW69ihSwuo19HigT-"
+    fileName := downloadImage(rawUrl)
+    if len(fileName) == 0 {
+        t.Errorf(rawUrl)
+    }
+}
