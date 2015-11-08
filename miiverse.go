@@ -1,13 +1,16 @@
 package main
 
 import (
+    "io"
+    "net/url"
+    "os"
     "fmt"
     "strings"
     "net/http"
     "golang.org/x/net/html"
 )
 
-func parsePost(miiverseName string, nickname string, text string, postUrl string) MiiversePost {
+func parsePost(miiverseName string, nickname string, text string, postUrl string, imgSrc string) MiiversePost {
     splitText := strings.Split(text, "(")
     postId := strings.Trim(postUrl, "/posts/")
     return MiiversePost{
@@ -16,6 +19,7 @@ func parsePost(miiverseName string, nickname string, text string, postUrl string
         Description: strings.Trim(splitText[0], " "),
         Code: strings.Trim(splitText[1], ")"),
         PostId: postId,
+        ImgSrc: imgSrc,
     }
 }
 
@@ -46,7 +50,9 @@ func crawl_miiverse(miiverseName string, chFinished chan bool, chPosts chan []Mi
     is_container := false
     is_nickname := false
     nickname := ""
+    is_post := false
     postUrl := ""
+    postImgSrc := ""
 
     for {
         tt := z.Next()
@@ -58,13 +64,13 @@ func crawl_miiverse(miiverseName string, chFinished chan bool, chPosts chan []Mi
             return
         case html.StartTagToken:
             t := z.Token()
-            if t.Data == "p" {
+            switch t.Data {
+            case "p":
                 ok, class := getAttr(t, "class")
                 if ok && class == "post-content-text" {
                     found_it = true
                 }
-            }
-            if t.Data == "a" {
+            case "a":
                 ok, class := getAttr(t, "class")
                 if ok && class == "test-community-link" {
                     is_container = true
@@ -74,6 +80,13 @@ func crawl_miiverse(miiverseName string, chFinished chan bool, chPosts chan []Mi
                 }
                 if ok && class == "screenshot-container still-image" {
                     _, postUrl = getAttr(t, "href")
+                    is_post = true
+                }
+            case "img":
+                ok, imgSrc := getAttr(t, "src")
+                if ok && is_post {
+                    postImgSrc = imgSrc
+                    is_post = false
                 }
             }
         case html.TextToken:
@@ -91,6 +104,7 @@ func crawl_miiverse(miiverseName string, chFinished chan bool, chPosts chan []Mi
                         nickname,
                         string(z.Text()),
                         postUrl,
+                        postImgSrc,
                     )
                     posts = append(posts, new_post)
                 }
@@ -126,4 +140,59 @@ func getMiiversePosts(names []string) []MiiversePost {
     }
 
     return allPosts
+}
+
+func downloadImage(rawUrl string) string {
+    fmt.Println("Downloading file...")
+
+    fileURL, err := url.Parse(rawUrl)
+    if err != nil {
+         panic(err)
+    }
+
+    path := fileURL.Path
+    segments := strings.Split(path, "/")
+    fileName := segments[2]
+    fileName = fmt.Sprintf("img/%s.jpeg", fileName)
+
+    file, err := os.Create(fileName)
+    if err != nil {
+         fmt.Println(err)
+         panic(err)
+    }
+    defer file.Close()
+
+    check := http.Client{
+         CheckRedirect: func(r *http.Request, via []*http.Request) error {
+                 r.URL.Opaque = r.URL.Path
+                 return nil
+         },
+    }
+
+    resp, err := check.Get(rawUrl) // add a filter to check redirect
+    if err != nil {
+         fmt.Println(err)
+         panic(err)
+    }
+    defer resp.Body.Close()
+
+    fmt.Println(resp.Status)
+
+    size, err := io.Copy(file, resp.Body)
+    if err != nil {
+         panic(err)
+    }
+
+    fmt.Printf("%s with %v bytes downloaded", fileName, size)
+
+    return fileName
+}
+
+func downloadImages(miiversePosts []MiiversePost) []MiiversePost {
+    var out []MiiversePost
+    for _, post := range miiversePosts {
+        post.ImgFile = downloadImage(post.ImgSrc)
+        out = append(out, post)
+    }
+    return out
 }

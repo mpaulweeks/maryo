@@ -1,6 +1,11 @@
 package main
 
 import (
+    "strings"
+    "bytes"
+    "io"
+    "mime/multipart"
+    "os"
     "fmt"
     "code.google.com/p/go.net/publicsuffix"
     "io/ioutil"
@@ -20,16 +25,15 @@ func formatPost(userData UserData, post MiiversePost) string {
     if ok {
         displayName = forumName
     }
-    return fmt.Sprintf("%s\n%s\n%s\n%s%s", displayName, post.Description, post.Code, miiversePostBase, post.PostId)
+    return fmt.Sprintf("<img src=\"%s\"/>\n%s\n%s\n%s\n%s%s", post.ImgUrl, displayName, post.Description, post.Code, miiversePostBase, post.PostId)
 }
 
 func formatPosts(cred Credentials, userData UserData, newPosts []MiiversePost) string {
-    html := "<b>NEW LEVELS</b>"
+    var post_htmls []string
     for _, post := range newPosts{
-        html = fmt.Sprintf("%s\n\n%s", html, formatPost(userData, post))
+        post_htmls = append(post_htmls, formatPost(userData, post))
     }
-    html = html + messageSigBase + cred.RegisterUrl
-    return html
+    return strings.Join(post_htmls, "\n\n") + messageSigBase + cred.RegisterUrl
 }
 
 func crawlForumTopic(client http.Client, url string) (success bool, out string) {
@@ -113,4 +117,79 @@ func postToForum(cred Credentials, client http.Client, forumKey string, forumMes
         log.Fatal(err)
     }
     log.Println(string(data))   // print resp
+}
+
+func parseImageUploadResponse(resp *http.Response) (ok bool, imgUrl string){
+    body := resp.Body
+    defer body.Close() // close Body when the function returns
+
+    rawOut, err := ioutil.ReadAll(body)
+    if err != nil {
+        log.Fatal("ERROR: Failed to read response")
+        return
+    }
+    strOut := string(rawOut)
+    imgUrl = strings.Split(strOut, "&quot;")[1]
+    ok = true
+    return
+}
+
+func uploadImage(cred Credentials, client http.Client, file string) (ok bool, imgUrl string) {
+    url := cred.ImageUploadUrl
+
+    // Prepare a form that you will submit to that URL.
+    var b bytes.Buffer
+    w := multipart.NewWriter(&b)
+    // Add your image file
+    f, err := os.Open(file)
+    if err != nil {
+        fmt.Print("err opening file")
+        return
+    }
+    fw, err := w.CreateFormFile("file", file)
+    if err != nil {
+        fmt.Print("err creating form")
+        return
+    }
+    if _, err = io.Copy(fw, f); err != nil {
+        fmt.Print("err copying form")
+        return
+    }
+    // Don't forget to close the multipart writer.
+    // If you don't close it, your request will be missing the terminating boundary.
+    w.Close()
+
+    // Now that you have a form, you can submit it to your handler.
+    req, err := http.NewRequest("POST", url, &b)
+    if err != nil {
+        fmt.Print("err creating request file")
+        return
+    }
+    // Don't forget to set the content type, this will contain the boundary.
+    req.Header.Set("Content-Type", w.FormDataContentType())
+
+    // Submit the request
+    res, err := client.Do(req)
+    if err != nil {
+        fmt.Print("err submiting request file")
+        return
+    }
+
+    // Check the response
+    if res.StatusCode != http.StatusOK {
+        err = fmt.Errorf("bad status: %s", res.Status)
+    }
+
+    ok, imgUrl = parseImageUploadResponse(res)
+    return
+}
+
+func uploadImages(cred Credentials, client http.Client, miiversePosts []MiiversePost) []MiiversePost {
+    var out []MiiversePost
+    for _, post := range miiversePosts {
+        _, imgUrl := uploadImage(cred, client, post.ImgFile)
+        post.ImgUrl = imgUrl
+        out = append(out, post)
+    }
+    return out
 }

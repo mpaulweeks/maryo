@@ -11,6 +11,7 @@ var waff1 = MiiversePost{
     Description: "Don't Throw the POW!",
     Code: "BBD1-0000-00C7-030C",
     PostId: "AYMHAAACAAADVHkkRVNLAA",
+    ImgSrc: "https://d3esbfg30x759i.cloudfront.net/ss/WVW69ihSwuo19HigT-",
 }
 
 var waff2 = MiiversePost{

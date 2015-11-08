@@ -39,3 +39,4 @@ cred_real.json
 cred_test.json
 cache.json
 nohup.out
+img/*.jpeg
