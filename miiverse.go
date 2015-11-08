@@ -7,7 +7,7 @@ import (
     "golang.org/x/net/html"
 )
 
-func parsePost(miiverseName string, nickname string, text string, postUrl string) MiiversePost {
+func parsePost(miiverseName string, nickname string, text string, postUrl string, imgSrc string) MiiversePost {
     splitText := strings.Split(text, "(")
     postId := strings.Trim(postUrl, "/posts/")
     return MiiversePost{
@@ -16,6 +16,7 @@ func parsePost(miiverseName string, nickname string, text string, postUrl string
         Description: strings.Trim(splitText[0], " "),
         Code: strings.Trim(splitText[1], ")"),
         PostId: postId,
+        ImgSrc: imgSrc,
     }
 }
 
@@ -46,7 +47,9 @@ func crawl_miiverse(miiverseName string, chFinished chan bool, chPosts chan []Mi
     is_container := false
     is_nickname := false
     nickname := ""
+    is_post := false
     postUrl := ""
+    postImgSrc := ""
 
     for {
         tt := z.Next()
@@ -58,13 +61,13 @@ func crawl_miiverse(miiverseName string, chFinished chan bool, chPosts chan []Mi
             return
         case html.StartTagToken:
             t := z.Token()
-            if t.Data == "p" {
+            switch t.Data {
+            case "p":
                 ok, class := getAttr(t, "class")
                 if ok && class == "post-content-text" {
                     found_it = true
                 }
-            }
-            if t.Data == "a" {
+            case "a":
                 ok, class := getAttr(t, "class")
                 if ok && class == "test-community-link" {
                     is_container = true
@@ -74,6 +77,13 @@ func crawl_miiverse(miiverseName string, chFinished chan bool, chPosts chan []Mi
                 }
                 if ok && class == "screenshot-container still-image" {
                     _, postUrl = getAttr(t, "href")
+                    is_post = true
+                }
+            case "img":
+                ok, imgSrc := getAttr(t, "src")
+                if ok && is_post {
+                    postImgSrc = imgSrc
+                    is_post = false
                 }
             }
         case html.TextToken:
@@ -91,6 +101,7 @@ func crawl_miiverse(miiverseName string, chFinished chan bool, chPosts chan []Mi
                         nickname,
                         string(z.Text()),
                         postUrl,
+                        postImgSrc,
                     )
                     posts = append(posts, new_post)
                 }

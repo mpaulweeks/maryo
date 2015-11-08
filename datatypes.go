@@ -6,6 +6,7 @@ type MiiversePost struct {
     Description string
     Code string
     PostId string
+    ImgSrc string
 }
 
 type Credentials struct {
