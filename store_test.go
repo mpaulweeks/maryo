@@ -10,6 +10,7 @@ var waff1 = MiiversePost{
     NickName: "Waff",
     Description: "Don't Throw the POW!",
     Code: "BBD1-0000-00C7-030C",
+    PostId: "AYMHAAACAAADVHkkRVNLAA",
 }
 
 var waff2 = MiiversePost{

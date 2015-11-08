@@ -5,6 +5,7 @@ type MiiversePost struct {
     NickName string
     Description string
     Code string
+    PostId string
 }
 
 type Credentials struct {

@@ -7,13 +7,15 @@ import (
     "golang.org/x/net/html"
 )
 
-func parsePost(miiverseName string, nickname string, text string) MiiversePost {
-    split := strings.Split(text, "(")
+func parsePost(miiverseName string, nickname string, text string, postUrl string) MiiversePost {
+    splitText := strings.Split(text, "(")
+    postId := strings.Trim(postUrl, "/posts/")
     return MiiversePost{
         MiiverseName: miiverseName,
         NickName: nickname,
-        Description: strings.Trim(split[0], " "),
-        Code: strings.Trim(split[1], ")"),
+        Description: strings.Trim(splitText[0], " "),
+        Code: strings.Trim(splitText[1], ")"),
+        PostId: postId,
     }
 }
 
@@ -44,6 +46,7 @@ func crawl_miiverse(miiverseName string, chFinished chan bool, chPosts chan []Mi
     is_container := false
     is_nickname := false
     nickname := ""
+    postUrl := ""
 
     for {
         tt := z.Next()
@@ -69,6 +72,9 @@ func crawl_miiverse(miiverseName string, chFinished chan bool, chPosts chan []Mi
                 if ok && class == "nick-name" {
                     is_nickname = true
                 }
+                if ok && class == "screenshot-container still-image" {
+                    _, postUrl = getAttr(t, "href")
+                }
             }
         case html.TextToken:
             if is_container {
@@ -80,7 +86,12 @@ func crawl_miiverse(miiverseName string, chFinished chan bool, chPosts chan []Mi
             if found_it {
                 found_it = false
                 if is_mario {
-                    new_post := parsePost(miiverseName, nickname, string(z.Text()))
+                    new_post := parsePost(
+                        miiverseName,
+                        nickname,
+                        string(z.Text()),
+                        postUrl,
+                    )
                     posts = append(posts, new_post)
                 }
             }

@@ -11,7 +11,8 @@ import (
     "golang.org/x/net/html"
 )
 
-const messageSig string = "\n---\nRegister your MiiverseName here: "
+const messageSigBase string = "\n---\nRegister your MiiverseName here: "
+const miiversePostBase string = "https://miiverse.nintendo.net/posts/"
 
 func formatPost(userData UserData, post MiiversePost) string {
     displayName := post.MiiverseName + " aka " + post.NickName
@@ -19,7 +20,7 @@ func formatPost(userData UserData, post MiiversePost) string {
     if ok {
         displayName = forumName
     }
-    return fmt.Sprintf("%s\n%s\n%s", displayName, post.Description, post.Code)
+    return fmt.Sprintf("%s\n%s\n%s\n%s%s", displayName, post.Description, post.Code, miiversePostBase, post.PostId)
 }
 
 func formatPosts(cred Credentials, userData UserData, newPosts []MiiversePost) string {
@@ -27,7 +28,7 @@ func formatPosts(cred Credentials, userData UserData, newPosts []MiiversePost) s
     for _, post := range newPosts{
         html = fmt.Sprintf("%s\n\n%s", html, formatPost(userData, post))
     }
-    html = html + messageSig + cred.RegisterUrl
+    html = html + messageSigBase + cred.RegisterUrl
     return html
 }
 
