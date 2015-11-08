@@ -15,9 +15,11 @@ func main() {
 
     if len(newPosts) > 0 {
         fmt.Println("New posts:", newPosts)
-        forumMessage := formatPosts(cred, userData, newPosts)
+        newPosts = downloadImages(newPosts)
         client := loginToForum(cred)
+        newPosts = uploadImages(cred, client, newPosts)
         forumKey := getForumKey(cred, client)
+        forumMessage := formatPosts(cred, userData, newPosts)
         postToForum(cred, client, forumKey, forumMessage)
     }
 

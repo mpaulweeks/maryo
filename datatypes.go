@@ -7,6 +7,8 @@ type MiiversePost struct {
     Code string
     PostId string
     ImgSrc string
+    ImgFile string
+    ImgUrl string
 }
 
 type Credentials struct {
@@ -15,6 +17,7 @@ type Credentials struct {
     Login string
     PostUrl string
     GetUrl string
+    ImageUploadUrl string
     ThreadId string
     Username string
     Password string

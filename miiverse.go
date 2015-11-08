@@ -187,3 +187,12 @@ func downloadImage(rawUrl string) string {
 
     return fileName
 }
+
+func downloadImages(miiversePosts []MiiversePost) []MiiversePost {
+    var out []MiiversePost
+    for _, post := range miiversePosts {
+        post.ImgFile = downloadImage(post.ImgSrc)
+        out = append(out, post)
+    }
+    return out
+}

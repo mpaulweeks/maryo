@@ -20,8 +20,11 @@ func TestMiiverse(t *testing.T) {
 
 func TestDownloadImage(t *testing.T) {
     rawUrl := "https://d3esbfg30x759i.cloudfront.net/ss/WVW69ihSwuo19HigT-"
-    fileName := downloadImage(rawUrl)
-    if len(fileName) == 0 {
-        t.Errorf(rawUrl)
+    post := waff1
+    post.ImgSrc = rawUrl
+    posts := []MiiversePost{post}
+    res := downloadImages(posts)
+    if len(res[0].ImgFile) == 0 {
+        t.Errorf("ImgFile didn't get saved: %s", res)
     }
 }
