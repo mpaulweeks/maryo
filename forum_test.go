@@ -21,14 +21,14 @@ func TestPostFormatting(t *testing.T) {
     }
 }
 
-// func TestGetForumKey(t *testing.T) {
-//     cred := loadCredentials(credFileTest)
-//     client := loginToForum(cred)
-//     result := getForumKey(cred, client)
-//     if len(result) != 5 {
-//         t.Errorf("Bad forum key: %q", result)
-//     }
-// }
+func TestGetForumKey(t *testing.T) {
+    cred := loadCredentials(credFileTest)
+    client := loginToForum(cred)
+    result := getForumKey(cred, client)
+    if len(result) != 5 {
+        t.Errorf("Bad forum key: %q", result)
+    }
+}
 
 // func TestUploadImage(t *testing.T) {
 //     cred := loadCredentials(credFileTest)
