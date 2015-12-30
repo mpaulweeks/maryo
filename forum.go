@@ -18,6 +18,7 @@ import (
 
 const messageSigBase string = "\n---\nRegister your MiiverseName here: "
 const miiversePostBase string = "https://miiverse.nintendo.net/posts/"
+const bookmarkBase string = "https://supermariomakerbookmark.nintendo.net/courses/"
 
 func formatPost(userData UserData, post MiiversePost) string {
     displayName := post.MiiverseName + " aka " + post.NickName
@@ -25,7 +26,12 @@ func formatPost(userData UserData, post MiiversePost) string {
     if ok {
         displayName = forumName
     }
-    return fmt.Sprintf("<img src=\"%s\"/>\n%s\n%s\n%s\n%s%s", post.ImgUrl, displayName, post.Description, post.Code, miiversePostBase, post.PostId)
+    return fmt.Sprintf(
+        "<img src=\"%s\"/>\n%s\n<b>%s</b>\n%s\n<b>Miiverse:</b> %s%s\n<b>Bookmark:</b> %s%s",
+        post.ImgUrl, displayName, post.Description, post.Code,
+        miiversePostBase, post.PostId,
+        bookmarkBase, post.Code,
+    )
 }
 
 func formatPosts(cred Credentials, userData UserData, newPosts []MiiversePost) string {

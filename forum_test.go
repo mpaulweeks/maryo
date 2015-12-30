@@ -14,7 +14,7 @@ func TestPostFormatting(t *testing.T) {
     userData := sampleUserData
     posts := []MiiversePost{waff1}
 
-    expected := "<img src=\"\"/>\nMr Lucky Waffles\nDon't Throw the POW!\nBBD1-0000-00C7-030C\nhttps://miiverse.nintendo.net/posts/AYMHAAACAAADVHkkRVNLAA\n---\nRegister your MiiverseName here: " + cred.RegisterUrl
+    expected := "<img src=\"\"/>\nMr Lucky Waffles\n<b>Don't Throw the POW!</b>\nBBD1-0000-00C7-030C\n<b>Miiverse:</b> https://miiverse.nintendo.net/posts/AYMHAAACAAADVHkkRVNLAA\n<b>Bookmark:</b> https://supermariomakerbookmark.nintendo.net/courses/BBD1-0000-00C7-030C\n---\nRegister your MiiverseName here: " + cred.RegisterUrl
     result := formatPosts(cred, userData, posts)
     if expected != result {
         t.Errorf("Expected: %q, Result: %q", expected, result)
