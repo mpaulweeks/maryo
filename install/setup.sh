@@ -1,3 +1,3 @@
 #!/bin/sh
 echo "{}" > cache.json
-go build
+./install/build.sh
