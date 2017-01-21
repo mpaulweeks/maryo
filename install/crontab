@@ -8,4 +8,4 @@
 # |  |  |  |  |
 # *  *  *  *  * user-name command to be executed
 
-* * * * * ec2-user cd /home/ec2-user/golang/src/maryo && ./bash/cronjob.sh
+*/5 * * * * ec2-user cd /home/ec2-user/golang/src/maryo && ./bash/cronjob.sh
